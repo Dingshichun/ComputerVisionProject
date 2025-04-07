@@ -16,7 +16,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 latent_dim = 100
 batch_size = 64
 lr = 0.0002
-num_epochs = 50
+num_epochs = 20  # 训练轮数越多，生成的图像质量越高
 
 # 3. 数据预处理与加载
 transform = transforms.Compose(
@@ -26,6 +26,7 @@ transform = transforms.Compose(
     ]
 )
 
+# download=True 表示如果数据集不存在则下载。如果数据集已经存在，则不会重复下载
 train_dataset = datasets.MNIST(
     root="./data", train=True, download=True, transform=transform
 )
@@ -74,16 +75,16 @@ class Discriminator(nn.Module):
 # 6. 初始化模型、优化器和损失函数
 generator = Generator().to(device)
 discriminator = Discriminator().to(device)
-criterion = nn.BCELoss()
+criterion = nn.BCELoss()  # 二元交叉熵损失函数
 
-optimizer_G = optim.Adam(generator.parameters(), lr=lr)
-optimizer_D = optim.Adam(discriminator.parameters(), lr=lr)
+optimizer_G = optim.Adam(generator.parameters(), lr=lr)  # 生成器优化器
+optimizer_D = optim.Adam(discriminator.parameters(), lr=lr)  # 判别器优化器
 
 # 7. 训练循环
 for epoch in range(num_epochs):
     for i, (imgs, _) in enumerate(train_loader):
-        real_imgs = imgs.to(device)
-        batch_size = real_imgs.size(0)
+        real_imgs = imgs.to(device)  # 将真实图像移动到 GPU 上
+        batch_size = real_imgs.size(0)  # 获取当前批次的大小
 
         # 真实标签和假标签
         real_labels = torch.ones(batch_size, 1).to(device)
@@ -109,9 +110,9 @@ for epoch in range(num_epochs):
         optimizer_D.step()
 
         # 训练生成器
-        optimizer_G.zero_grad()
+        optimizer_G.zero_grad()  # 生成器优化器清零
 
-        outputs = discriminator(fake_imgs)
+        outputs = discriminator(fake_imgs)  # 判别器对假图像的输出
         g_loss = criterion(outputs, real_labels)
         g_loss.backward()
         optimizer_G.step()
@@ -123,7 +124,7 @@ for epoch in range(num_epochs):
                 f"D Loss: {d_loss.item():.4f} G Loss: {g_loss.item():.4f}"
             )
 
-    # 每个epoch结束后保存生成的图像
+    # 每个 epoch 结束后保存生成的图像
     with torch.no_grad():
         test_z = torch.randn(16, latent_dim).to(device)
         generated = generator(test_z).cpu()
@@ -133,6 +134,8 @@ for epoch in range(num_epochs):
             ax.axis("off")
         plt.savefig(f"epoch_{epoch}.png")
         plt.close()
+
+torch.save(generator.state_dict(), "generator.pth")  # 保存生成器模型
 
 # 8. 生成示例图像（训练后）
 # 加载训练好的模型

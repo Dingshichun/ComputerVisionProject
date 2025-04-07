@@ -20,12 +20,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # 数据预处理
 transform = transforms.Compose(
     [
-        transforms.ToTensor(),  # 转换为 Tensor 格式 [0, 1]
+        transforms.ToTensor(),  # 转换为 Tensor 格式
         transforms.Normalize((0.1307,), (0.3081,)),  # MNIST 数据集的均值和标准差
     ]
 )
 
-# 加载数据集并划分为训练集和测试集
+# 加载数据集并划分为训练集和测试集。download=True 表示如果数据集不存在则下载
+# 如果数据集已经存在，则不会重复下载
 train_dataset = datasets.MNIST(
     root="./data", train=True, download=True, transform=transform
 )
@@ -34,6 +35,9 @@ test_dataset = datasets.MNIST(
 )
 
 # 创建数据加载器
+# DataLoader 是 PyTorch 中用于批量加载数据的工具，可以自动将数据划分为小批量
+# shuffle=True 表示每个 epoch 都会打乱数据顺序，增加训练的随机性
+# 测试集不需要打乱顺序
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1000, shuffle=False)
 
@@ -62,7 +66,7 @@ class CNN(nn.Module):
         return x
 
 
-# 模型实例化并移动到 GPU 或 CPU
+# 模型实例化并移动到所使用的 device 上
 model = CNN().to(device)
 
 # 定义损失函数和优化器
@@ -107,7 +111,7 @@ def test():
     )
 
 
-# 训练10个epoch
+# 训练 10 个 epoch
 for epoch in range(1, 11):
     train(epoch)
     test()
