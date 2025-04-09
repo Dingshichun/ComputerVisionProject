@@ -1,13 +1,13 @@
-# 强化学习：DQN算法，是一种深度强化学习算法，使用神经网络来近似Q值函数。
-# 该算法使用经验回放和目标网络来提高训练的稳定性和效率。    
+# 强化学习：DQN 算法，是一种深度强化学习算法，使用神经网络来近似 Q 值函数。
+# 该算法使用经验回放和目标网络来提高训练的稳定性和效率。
 
 
-import gym # gym 是一个用于开发和比较强化学习算法的工具包。
+import gym  # gym 是一个用于开发和比较强化学习算法的工具包。
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from collections import deque # deque 是一个双端队列，可以在两端高效地添加和删除元素。
+from collections import deque  # deque 是双端队列，可以在两端高效地添加和删除元素。
 import random
 
 # 超参数
