@@ -44,3 +44,6 @@ def ResNet18(num_classes=10):
 if __name__ == "__main__":
     resnet18 = ResNet18(10)
     print(resnet18)
+    tensor = torch.randn(1, 3, 224, 224)  # 输入数据为 N*C*W*H，表示批次*通道数*宽*高
+    output = resnet18(tensor)
+    print(output.shape)
