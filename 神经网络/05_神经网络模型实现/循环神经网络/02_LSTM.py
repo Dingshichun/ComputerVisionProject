@@ -44,10 +44,10 @@ class MultiStepLSTM(nn.Module):
     def __init__(self, input_size, hidden_size, output_steps):
         super().__init__()
         self.lstm = nn.LSTM(
-            input_size=input_size,
-            hidden_size=hidden_size,
-            batch_first=True,
-            num_layers=2,
+            input_size=input_size,  # 输入特征的维度
+            hidden_size=hidden_size,  # LSTM 每一层的输出维度
+            batch_first=True,  # # 是否调整输入输出形状为(batch, seq, feature)，便于处理批量数据
+            num_layers=2,  # 堆叠的 LSTM 单元层数
             dropout=0.2,
         )
         # 调整全连接层输出维度计算
@@ -61,9 +61,7 @@ class MultiStepLSTM(nn.Module):
     def forward(self, x):
         out, _ = self.lstm(x)
         out = self.linear(out[:, -1, :])  # 取最后一个时间步
-        return out.view(
-            -1, self.output_steps, 2
-        )  # 重塑为(batch, steps, features)
+        return out.view(-1, self.output_steps, 2)  # 重塑为(batch, steps, features)
 
 
 # 维度校验的训练流程
