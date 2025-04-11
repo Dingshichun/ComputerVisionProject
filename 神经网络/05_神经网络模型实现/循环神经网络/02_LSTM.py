@@ -20,9 +20,9 @@ def prepare_data(data, n_steps, output_steps=2, test_ratio=0.2):
         X.append(scaled_data[i : i + n_steps, :])
         y.append(
             scaled_data[i + n_steps : i + n_steps + output_steps, 1:3]
-        )  # 保持输入输出维度对齐[3,6](@ref)
+        )  # 保持输入输出维度对齐
 
-    # 修改点3：添加维度校验
+    # 添加维度校验
     assert len(X) == len(y), "X与y样本数量不匹配"
     X, y = np.array(X), np.array(y)
     print(
@@ -91,7 +91,7 @@ def train_model(model, X_train, y_train, epochs=200):
 
 
 if __name__ == "__main__":
-    # 生成演示数据（替换为真实数据）
+    # 生成演示数据（使用时更改为自己的数据）
     data = pd.DataFrame(
         {
             "time_id": range(1000),
